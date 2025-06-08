@@ -1,5 +1,36 @@
-node_modules
-# Keep environment variables out of version control
-.env
+backend/node_modules/
+backend/dist/
+backend/build/
+backend/*.log
+backend/npm-debug.log*
+backend/yarn-debug.log*
+backend/yarn-error.log*
 
-/src/generated/prisma
+
+backend/.env
+!backend/.env.example # Não ignora o .env.example do backend
+
+
+backend/*.tsbuildinfo
+backend/.vscode/ # Opcional: para ignorar configurações específicas do VS Code do backend
+
+
+ChatBot/node_modules/
+ChatBot/dist/
+ChatBot/build/
+ChatBot/*.log
+ChatBot/npm-debug.log*
+ChatBot/yarn-debug.log*
+ChatBot/yarn-error.log*
+
+
+ChatBot/.env
+!ChatBot/.env.example # Não ignora o .env.example do frontend
+
+
+ChatBot/*.tsbuildinfo
+ChatBot/.vscode/ # Opcional: para ignorar configurações específicas do VS Code do frontend
+
+
+.DS_Store # macOS
+Thumbs.db # Windows
