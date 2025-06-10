@@ -15,9 +15,13 @@ const Login: React.FC = () => {
       return;
     }
 
-    // TODO: Implement actual authentication logic here
     if (email === 'admin@example.com' && password === 'password') {
       localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('role', 'admin');
+      navigate('/home');
+    } else if (email === 'user@example.com' && password === 'password') {
+      localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('role', 'user');
       navigate('/home');
     } else {
       alert('Credenciais inválidas');

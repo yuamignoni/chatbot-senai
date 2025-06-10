@@ -11,8 +11,8 @@ const Home: React.FC = () => {
 
   return (
     <div>
-      <h1>Welcome to the Home Page</h1>
-      <button onClick={handleLogout}>Logout</button>
+      <h1>Bem-vindo à página inicial</h1>
+      <button onClick={handleLogout}>Sair</button>
     </div>
   );
 };
