@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import RegisterCollaborator from '../components/RegisterCollaborator';
 import EditCollaborator from '../components/EditCollaborator';
-import './Manager.css';
+import '../styles/manager.css';
 
 interface Collaborator {
   id: number;
@@ -61,12 +61,9 @@ const Manager: React.FC = () => {
   };
 
   return (
-    <div id='manager-page' className='flex-center flex-column flex__gap-30 padding-50 min-height-100vh'>
-      <h1>Página do Administrador</h1>
-      <p>Bem-vindo, Admin!</p>
-
+    <div id='manager-page' className='flex-center flex-column flex__justify-start flex__gap-30 padding-50 min-height-100vh'>
+      <h1>Colaboradores</h1>
       <div className="collaborators-section">
-        <h2>Colaboradores</h2>
         <button 
           className="add-button"
           onClick={() => setIsRegisterPopupOpen(true)}

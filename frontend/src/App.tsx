@@ -2,6 +2,7 @@ import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import Manager from './pages/Manager';
+import Menu from './components/Menu';
 import './App.css';
 
 const AuthGuard = ({ allowedRoles }: { allowedRoles: string[] }) => {
@@ -15,10 +16,26 @@ const AuthGuard = ({ allowedRoles }: { allowedRoles: string[] }) => {
   return role && allowedRoles.includes(role) ? <Outlet /> : <Navigate to="/unauthorized" />;
 };
 
+const AuthenticatedLayout = () => {
+  return (
+    <>
+      <Menu />
+      <Outlet />
+    </>
+  );
+};
+
 const HomeWrapper = () => {
   const username = localStorage.getItem('username') || 'Usuário';
   return <Home username={username} />;
 };
+
+const UnauthorizedPage = () => (
+  <div style={{ paddingTop: '100px', textAlign: 'center' }}>
+    <h1>Não Autorizado</h1>
+    <p>Você não tem permissão para acessar esta página.</p>
+  </div>
+);
 
 function App() {
   return (
@@ -26,15 +43,17 @@ function App() {
       <Route path="/" element={<Navigate to="/login" />} />
       <Route path="/login" element={<Login />} />
       
-      <Route element={<AuthGuard allowedRoles={['admin']} />}>
-        <Route path="/manager" element={<Manager />} />
-      </Route>
+      <Route element={<AuthenticatedLayout />}>
+        <Route element={<AuthGuard allowedRoles={['admin']} />}>
+          <Route path="/manager" element={<Manager />} />
+        </Route>
 
-      <Route element={<AuthGuard allowedRoles={['admin', 'user']} />}>
-        <Route path="/home" element={<HomeWrapper />} />
+        <Route element={<AuthGuard allowedRoles={['admin', 'user']} />}>
+          <Route path="/home" element={<HomeWrapper />} />
+        </Route>
+        
+        <Route path="/unauthorized" element={<UnauthorizedPage />} />
       </Route>
-
-      <Route path="/unauthorized" element={<div><h1>Não Autorizado</h1><p>Você não tem permissão para acessar esta página.</p></div>} />
     </Routes>
   );
 }

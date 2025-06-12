@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './RegisterCollaborator.css';
+import '../styles/register_collaborator.css';
 
 interface RegisterCollaboratorProps {
   isOpen: boolean;

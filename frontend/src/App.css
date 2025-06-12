@@ -1,5 +1,5 @@
 :root {
-    --color-main: #ff8c00;
+    --color-main: #006BB7;
     --color-dark-light: #121212;
     --color-dark: #090a0a;
     --color-gray: #706d7e;
@@ -101,6 +101,10 @@
   .full-window {
     width: 100%;
     height: 100vh;
+  }
+
+  .flex__justify-start{
+    justify-content: start;
   }
 
   .min-height-100vh {
