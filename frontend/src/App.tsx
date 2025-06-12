@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import Login from './pages/Login';
+import ForgotPassword from './pages/ForgotPassword';
 import Home from './pages/Home';
 import Manager from './pages/Manager';
 import Menu from './components/Menu';
@@ -42,6 +43,7 @@ function App() {
     <Routes>
       <Route path="/" element={<Navigate to="/login" />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/esqueci-senha" element={<ForgotPassword />} />
       
       <Route element={<AuthenticatedLayout />}>
         <Route element={<AuthGuard allowedRoles={['admin']} />}>

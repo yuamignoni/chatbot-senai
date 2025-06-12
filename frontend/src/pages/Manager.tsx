@@ -10,12 +10,13 @@ interface Collaborator {
   email: string;
   password?: string;
   role: 'admin' | 'user';
+  admissionDate: string;
 }
 
 const Manager: React.FC = () => {
   const [collaborators, setCollaborators] = useState<Collaborator[]>([
-    { id: 1, firstName: 'João', lastName: 'Silva', email: 'joao.silva@example.com', password: 'senha-super-secreta-1', role: 'admin' },
-    { id: 2, firstName: 'Maria', lastName: 'Santos', email: 'maria.santos@example.com', password: 'outra-senha-secreta-2', role: 'user' },
+    { id: 1, firstName: 'João', lastName: 'Silva', email: 'joao.silva@example.com', password: 'senha-super-secreta-1', role: 'admin', admissionDate: '2023-01-15' },
+    { id: 2, firstName: 'Maria', lastName: 'Santos', email: 'maria.santos@example.com', password: 'outra-senha-secreta-2', role: 'user', admissionDate: '2023-03-22' },
   ]);
   const [isRegisterPopupOpen, setIsRegisterPopupOpen] = useState(false);
   const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
@@ -27,6 +28,7 @@ const Manager: React.FC = () => {
     email: string;
     password: string;
     role: 'admin' | 'user';
+    admissionDate: string;
   }) => {
     const newId = collaborators.length > 0 ? Math.max(...collaborators.map(c => c.id)) + 1 : 1;
     
@@ -45,6 +47,7 @@ const Manager: React.FC = () => {
     email: string;
     password?: string;
     role: 'admin' | 'user';
+    admissionDate: string;
   }) => {
     setCollaborators(collaborators.map(collab => 
       collab.id === id ? { ...collab, ...updatedData } : collab
@@ -79,6 +82,7 @@ const Manager: React.FC = () => {
               <th>E-mail</th>
               <th>Senha</th>
               <th>Role</th>
+              <th>Data de Admissão</th>
               <th>Ações</th>
             </tr>
           </thead>
@@ -91,6 +95,7 @@ const Manager: React.FC = () => {
                 <td>{collab.email}</td>
                 <td>{'********'}</td>
                 <td>{collab.role}</td>
+                <td>{collab.admissionDate}</td>
                 <td>
                   <button 
                     className="edit-button"

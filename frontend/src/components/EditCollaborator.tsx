@@ -10,6 +10,7 @@ interface EditCollaboratorProps {
     email: string;
     password?: string;
     role: 'admin' | 'user';
+    admissionDate: string;
   }) => void;
   collaborator: {
     id: number;
@@ -18,6 +19,7 @@ interface EditCollaboratorProps {
     email: string;
     password?: string;
     role: 'admin' | 'user';
+    admissionDate: string;
   } | null;
 }
 
@@ -32,6 +34,7 @@ const EditCollaborator: React.FC<EditCollaboratorProps> = ({
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<'admin' | 'user'>('user');
+  const [admissionDate, setAdmissionDate] = useState('');
 
   useEffect(() => {
     if (collaborator) {
@@ -40,6 +43,7 @@ const EditCollaborator: React.FC<EditCollaboratorProps> = ({
       setEmail(collaborator.email);
       setPassword(''); 
       setRole(collaborator.role);
+      setAdmissionDate(collaborator.admissionDate);
     }
   }, [collaborator]);
 
@@ -52,6 +56,7 @@ const EditCollaborator: React.FC<EditCollaboratorProps> = ({
         lastName,
         email,
         role,
+        admissionDate,
       };
       
       if (password) {
@@ -126,6 +131,16 @@ const EditCollaborator: React.FC<EditCollaboratorProps> = ({
               <option value="user">Usuário</option>
               <option value="admin">Administrador</option>
             </select>
+          </div>
+          <div className="form-group">
+            <label htmlFor="admissionDate">Data de Admissão:</label>
+            <input
+              type="date"
+              id="admissionDate"
+              value={admissionDate}
+              onChange={(e) => setAdmissionDate(e.target.value)}
+              required
+            />
           </div>
           <div className="form-actions">
             <button type="button" onClick={onClose}>

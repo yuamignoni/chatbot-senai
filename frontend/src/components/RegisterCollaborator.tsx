@@ -10,6 +10,7 @@ interface RegisterCollaboratorProps {
     email: string;
     password: string;
     role: 'admin' | 'user';
+    admissionDate: string;
   }) => void;
 }
 
@@ -23,6 +24,7 @@ const RegisterCollaborator: React.FC<RegisterCollaboratorProps> = ({
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<'admin' | 'user'>('user');
+  const [admissionDate, setAdmissionDate] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,12 +34,14 @@ const RegisterCollaborator: React.FC<RegisterCollaboratorProps> = ({
       email,
       password,
       role,
+      admissionDate,
     });
     setFirstName('');
     setLastName('');
     setEmail('');
     setPassword('');
     setRole('user');
+    setAdmissionDate('');
     onClose();
   };
 
@@ -104,6 +108,16 @@ const RegisterCollaborator: React.FC<RegisterCollaboratorProps> = ({
               <option value="user">Usuário</option>
               <option value="admin">Administrador</option>
             </select>
+          </div>
+          <div className="form-group">
+            <label htmlFor="admissionDate">Data de Admissão:</label>
+            <input
+              type="date"
+              id="admissionDate"
+              value={admissionDate}
+              onChange={(e) => setAdmissionDate(e.target.value)}
+              required
+            />
           </div>
           <div className="form-actions">
             <button type="button" onClick={onClose}>

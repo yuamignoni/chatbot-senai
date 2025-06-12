@@ -1,43 +1,25 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import '../styles/login.css';
-import showIcon from '../assets/show.svg';
-import hideIcon from '../assets/hide.svg';
 import logo from '../assets/sesi-senai.webp';
 
-const Login: React.FC = () => {
+const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
+  const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setError('Por favor, insira um e-mail ou senha válidos.');
+      setMessage({ text: 'Por favor, insira um e-mail válido.', type: 'error' });
       return;
     }
 
-    if (email === 'admin@example.com' && password === 'password') {
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('role', 'admin');
-      localStorage.setItem('username', 'Admin');
-      navigate('/home');
-    } else if (email === 'user@example.com' && password === 'password') {
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('role', 'user');
-      localStorage.setItem('username', 'Usuário');
-      navigate('/home');
-    } else {
-      setError('Credenciais inválidas');
-    }
-  };
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
+    setMessage({ 
+      text: 'E-mail enviado com sucesso! Por favor, verifique sua caixa de entrada.', 
+      type: 'success' 
+    });
   };
 
   return (
@@ -53,10 +35,10 @@ const Login: React.FC = () => {
             </div>
             <div>
               <h1 className="text-center title-main mg__bottom-15">
-                Seja bem-vindo ao <span>Chatbot Senai</span>
+                Recuperação de Senha
               </h1>
               <p className="text-center paragraph-default">
-                Faça o seu login para acessar a plataforma
+                Informe seu e-mail para recuperar sua senha
               </p>
             </div>
           </header>
@@ -64,69 +46,34 @@ const Login: React.FC = () => {
           <form
             action="#"
             className="form login"
-            id="login-form"
-            onSubmit={handleLogin}
+            onSubmit={handleSubmit}
           >
-            {error && <span className="span-required">{error}</span>}
+            {message && (
+              <span className={`span-${message.type === 'success' ? 'success' : 'required'}`}>
+                {message.text}
+              </span>
+            )}
+            
             <div className="form__field">
               <label htmlFor="email">
                 <svg className="icon">
                   <use href="#icon-user"></use>
                 </svg>
-                <span className="hidden">Usuário</span>
+                <span className="hidden">E-mail</span>
               </label>
               <input
                 type="email"
                 id="email"
-                name="username"
+                name="email"
                 className="form__input inputs-forms"
                 placeholder="E-mail"
                 required
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
-                  setError(null);
+                  setMessage(null);
                 }}
               />
-            </div>
-
-            <div className="form__field">
-              <label htmlFor="password">
-                <svg className="icon">
-                  <use href="#icon-lock"></use>
-                </svg>
-                <span className="hidden">Senha</span>
-              </label>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                name="password"
-                id="input-password"
-                className="form__input inputs-forms"
-                placeholder="Senha"
-                required
-                maxLength={20}
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  setError(null);
-                }}
-              />
-              <div
-                className="toggle-mask flex-center cursor-pointer"
-                onClick={togglePasswordVisibility}
-              >
-                <img
-                  id="showHide"
-                  src={showPassword ? hideIcon : showIcon}
-                  alt={showPassword ? 'Esconder' : 'Mostrar'}
-                />
-              </div>
-            </div>
-
-            <div className="text-center mg__bottom-15">
-              <Link to="/esqueci-senha" className="forgot-password">
-                Esqueci minha senha
-              </Link>
             </div>
 
             <div className="form__field">
@@ -134,8 +81,14 @@ const Login: React.FC = () => {
                 className="login-btn cursor-pointer inputs-forms"
                 type="submit"
               >
-                Logar
+                Enviar
               </button>
+            </div>
+
+            <div className="text-center mg__top-15">
+              <Link to="/" className="back-to-login">
+                Voltar para o login
+              </Link>
             </div>
           </form>
 
@@ -156,4 +109,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default ForgotPassword; 
