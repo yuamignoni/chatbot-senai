@@ -1,0 +1,20 @@
+#home-page{
+    background-color: #f0f0f0;
+    color: #464646;
+}
+
+.btn-logout{
+    padding: 8px 25px;
+    border-radius: 5px;
+    border: none;
+    background-color: #9c3a3a;
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-logout:hover{
+   scale: 1.1;
+}

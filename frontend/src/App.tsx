@@ -15,6 +15,11 @@ const AuthGuard = ({ allowedRoles }: { allowedRoles: string[] }) => {
   return role && allowedRoles.includes(role) ? <Outlet /> : <Navigate to="/unauthorized" />;
 };
 
+const HomeWrapper = () => {
+  const username = localStorage.getItem('username') || 'Usuário';
+  return <Home username={username} />;
+};
+
 function App() {
   return (
     <Routes>
@@ -26,7 +31,7 @@ function App() {
       </Route>
 
       <Route element={<AuthGuard allowedRoles={['admin', 'user']} />}>
-        <Route path="/home" element={<Home />} />
+        <Route path="/home" element={<HomeWrapper />} />
       </Route>
 
       <Route path="/unauthorized" element={<div><h1>Não Autorizado</h1><p>Você não tem permissão para acessar esta página.</p></div>} />

@@ -23,10 +23,12 @@ const Login: React.FC = () => {
     if (email === 'admin@example.com' && password === 'password') {
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('role', 'admin');
+      localStorage.setItem('username', 'Admin');
       navigate('/home');
     } else if (email === 'user@example.com' && password === 'password') {
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('role', 'user');
+      localStorage.setItem('username', 'Usuário');
       navigate('/home');
     } else {
       setError('Credenciais inválidas');
