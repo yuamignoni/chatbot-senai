@@ -16,7 +16,7 @@ const Home: React.FC<HomeProps> = ({ username }) => {
   };
 
   return (
-    <div id='home-page' className='flex-center flex-column flex__gap-30 padding-50'>
+    <div id='home-page' className='flex-center flex-column flex__gap-30 padding-50 min-height-100vh'>
       <h1>Olá, {username}!</h1>
       <Standard
       typebot="condi-o-utilizando-moment-of-the-day-8y1enkk"
