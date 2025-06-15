@@ -11,7 +11,7 @@ const Home: React.FC<HomeProps> = ({ username }) => {
     <div id='home-page' className='flex-center flex__justify-start flex-column flex__gap-30 padding-50 min-height-100vh'>
       <h1>Olá, {username}!</h1>
       <Standard
-      typebot="condi-o-utilizando-moment-of-the-day-8y1enkk"
+      typebot="typebot-senai-u8wmr4h"
       apiHost="https://typebot.io"
       style={{ width: "60%", height: "700px", borderRadius: "10px", boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)" }}
       />
