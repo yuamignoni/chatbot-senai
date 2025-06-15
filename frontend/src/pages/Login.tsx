@@ -12,7 +12,7 @@ const Login: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -21,18 +21,35 @@ const Login: React.FC = () => {
       return;
     }
 
-    if (email === 'admin@example.com' && password === 'password') {
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('role', 'admin');
-      localStorage.setItem('username', 'Admin');
-      navigate('/home');
-    } else if (email === 'user@example.com' && password === 'password') {
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('role', 'user');
-      localStorage.setItem('username', 'Usuário');
-      navigate('/home');
-    } else {
-      setError('Credenciais inválidas');
+    try {
+      const response = await fetch('http://localhost:3000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('isAuthenticated', 'true');
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        // Simple role check based on email for now
+        if (data.user.email === 'admin@example.com') {
+          localStorage.setItem('role', 'admin');
+          localStorage.setItem('username', 'Admin');
+        } else {
+          localStorage.setItem('role', 'user');
+          localStorage.setItem('username', data.user.email);
+        }
+        navigate('/home');
+      } else {
+        setError(data.message || 'Credenciais inválidas');
+      }
+    } catch (err) {
+      setError('Não foi possível conectar ao servidor. Tente novamente mais tarde.');
     }
   };
 
