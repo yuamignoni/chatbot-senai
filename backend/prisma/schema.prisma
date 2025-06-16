@@ -1,27 +1,17 @@
 // prisma/schema.prisma
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql" // Mantenha o provedor que você já está usando (postgresql, mysql, sqlite)
+  provider = "postgresql" // OU mysql, sqlite - TEM QUE SER IGUAL AO QUE VOCÊ USOU NO "prisma init"
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
-  USER
-  ADMIN
-}
-
 model User {
-  id            String    @id @default(uuid())
-  email         String    @unique
-  password      String
-  firstName     String
-  lastName      String
-  admissionDate DateTime  @default(now())
-  role          UserRole  @default(USER)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
