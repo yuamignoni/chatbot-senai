@@ -1,77 +1,99 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import prisma from '../config/database';
+import { generateToken } from '../config/jwt';
+import { comparePassword } from '../utils/password';
+import { sendSuccess, sendError } from '../utils/response';
+import { LoginInput, JWTPayload } from '../types';
 
-const prisma = new PrismaClient();
-const JWT_SECRET = process.env.JWT_SECRET; 
+interface AuthenticatedRequest extends Request {
+  user?: JWTPayload;
+}
 
-export const register = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ message: 'Email e senha são obrigatórios.' });
-  }
-
-  if (!JWT_SECRET) {
-    console.error('JWT_SECRET não está definido nas variáveis de ambiente.');
-    return res.status(500).json({ message: 'Erro de configuração do servidor.' });
-  }
-
+export const login = async (req: Request, res: Response): Promise<void> => {
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const { email, senha }: LoginInput = req.body;
 
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
+    // Find user by email
+    const funcionario = await prisma.funcionario.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        senha_hash: true,
+        role: true,
+        ativo: true,
+        cargo: true,
+        departamento: true,
       },
     });
 
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
-
-    return res.status(201).json({ message: 'Usuário registrado com sucesso!', token, user: { id: user.id, email: user.email } });
-  } catch (error: any) {
-    if (error.code === 'P2002') { 
-      return res.status(409).json({ message: 'Email já registrado.' });
+    if (!funcionario) {
+      sendError(res, 'Credenciais inválidas', 401);
+      return;
     }
-    console.error('Erro ao registrar usuário:', error);
-    return res.status(500).json({ message: 'Erro interno do servidor.' });
+
+    if (!funcionario.ativo) {
+      sendError(res, 'Conta desativada', 401);
+      return;
+    }
+
+    // Verify password
+    const isPasswordValid = await comparePassword(senha, funcionario.senha_hash);
+    if (!isPasswordValid) {
+      sendError(res, 'Credenciais inválidas', 401);
+      return;
+    }
+
+    // Generate JWT token
+    const token = generateToken({
+      id: funcionario.id,
+      email: funcionario.email,
+      role: funcionario.role,
+    });
+
+    // Remove password from response
+    const { senha_hash, ...funcionarioData } = funcionario;
+
+    sendSuccess(res, {
+      token,
+      funcionario: funcionarioData,
+    }, 'Login realizado com sucesso');
+
+  } catch (error) {
+    console.error('Login error:', error);
+    sendError(res, 'Erro interno do servidor');
   }
 };
 
-export const login = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ message: 'Email e senha são obrigatórios.' });
-  }
-
-  if (!JWT_SECRET) {
-    console.error('JWT_SECRET não está definido nas variáveis de ambiente.');
-    return res.status(500).json({ message: 'Erro de configuração do servidor.' });
-  }
-
+export const getProfile = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const user = await prisma.user.findUnique({
-      where: { email },
+    const funcionario = await prisma.funcionario.findUnique({
+      where: { id: req.user!.id },
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        cpf: true,
+        data_nascimento: true,
+        data_contratacao: true,
+        cargo: true,
+        departamento: true,
+        role: true,
+        ativo: true,
+        criado_em: true,
+        atualizado_em: true,
+      },
     });
 
-    if (!user) {
-      return res.status(401).json({ message: 'Credenciais inválidas.' });
+    if (!funcionario) {
+      sendError(res, 'Funcionário não encontrado', 404);
+      return;
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.password);
-
-    if (!passwordMatch) {
-      return res.status(401).json({ message: 'Credenciais inválidas.' });
-    }
-
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
-
-    return res.status(200).json({ message: 'Login realizado com sucesso!', token, user: { id: user.id, email: user.email } });
+    sendSuccess(res, funcionario, 'Perfil recuperado com sucesso');
   } catch (error) {
-    console.error('Erro ao fazer login:', error);
-    return res.status(500).json({ message: 'Erro interno do servidor.' });
+    console.error('Get profile error:', error);
+    sendError(res, 'Erro interno do servidor');
   }
 };
