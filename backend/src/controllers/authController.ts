@@ -13,7 +13,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, senha }: LoginInput = req.body;
 
-    // Find user by email
     const funcionario = await prisma.funcionario.findUnique({
       where: { email },
       select: {
@@ -37,22 +36,17 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       sendError(res, 'Conta desativada', 401);
       return;
     }
-
-    // Verify password
     const isPasswordValid = await comparePassword(senha, funcionario.senha_hash);
     if (!isPasswordValid) {
       sendError(res, 'Credenciais inválidas', 401);
       return;
     }
-
-    // Generate JWT token
     const token = generateToken({
       id: funcionario.id,
       email: funcionario.email,
       role: funcionario.role,
     });
 
-    // Remove password from response
     const { senha_hash, ...funcionarioData } = funcionario;
 
     sendSuccess(res, {

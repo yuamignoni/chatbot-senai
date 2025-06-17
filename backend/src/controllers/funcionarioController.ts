@@ -13,7 +13,6 @@ export const createFuncionario = async (req: Request, res: Response): Promise<vo
     try {
         const funcionarioData: FuncionarioCreateInput = req.body;
 
-        // Check if email already exists
         const existingEmail = await prisma.funcionario.findUnique({
             where: { email: funcionarioData.email },
         });
@@ -23,7 +22,6 @@ export const createFuncionario = async (req: Request, res: Response): Promise<vo
             return;
         }
 
-        // Check if CPF already exists
         const existingCPF = await prisma.funcionario.findUnique({
             where: { cpf: funcionarioData.cpf },
         });
@@ -33,13 +31,12 @@ export const createFuncionario = async (req: Request, res: Response): Promise<vo
             return;
         }
 
-        // Hash password
         const hashedPassword = await hashPassword(funcionarioData.senha);
+        const { senha, ...funcionarioDataSemSenha } = funcionarioData;
 
-        // Create funcionario
         const funcionario = await prisma.funcionario.create({
             data: {
-                ...funcionarioData,
+                ...funcionarioDataSemSenha,
                 senha_hash: hashedPassword,
             },
             select: {
@@ -80,7 +77,6 @@ export const getFuncionarios = async (req: Request, res: Response): Promise<void
         const limitNum = parseInt(limit);
         const skip = (pageNum - 1) * limitNum;
 
-        // Build where clause
         const where: any = {};
 
         if (search) {
@@ -187,7 +183,6 @@ export const updateFuncionario = async (req: Request, res: Response): Promise<vo
         const { id } = req.params;
         const updateData: FuncionarioUpdateInput = req.body;
 
-        // Check if funcionario exists
         const existingFuncionario = await prisma.funcionario.findUnique({
             where: { id: parseInt(<string>id) },
         });
@@ -197,7 +192,6 @@ export const updateFuncionario = async (req: Request, res: Response): Promise<vo
             return;
         }
 
-        // Check if email is being updated and is unique
         if (updateData.email && updateData.email !== existingFuncionario.email) {
             const existingEmail = await prisma.funcionario.findUnique({
                 where: { email: updateData.email },
@@ -209,7 +203,6 @@ export const updateFuncionario = async (req: Request, res: Response): Promise<vo
             }
         }
 
-        // Check if CPF is being updated and is unique
         if (updateData.cpf && updateData.cpf !== existingFuncionario.cpf) {
             const existingCPF = await prisma.funcionario.findUnique({
                 where: { cpf: updateData.cpf },
@@ -221,7 +214,6 @@ export const updateFuncionario = async (req: Request, res: Response): Promise<vo
             }
         }
 
-        // Update funcionario
         const funcionario = await prisma.funcionario.update({
             where: { id: parseInt(<string>id) },
             data: {
@@ -255,7 +247,6 @@ export const deleteFuncionario = async (req: Request, res: Response): Promise<vo
     try {
         const { id } = req.params;
 
-        // Check if funcionario exists
         const existingFuncionario = await prisma.funcionario.findUnique({
             where: { id: parseInt(<string>id) },
         });

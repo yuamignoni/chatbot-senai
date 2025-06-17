@@ -7,7 +7,6 @@ import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 
 const app = express();
 
-// Security middleware
 app.use(helmet());
 app.use(
     cors({
@@ -27,15 +26,9 @@ const limiter = rateLimit({
 });
 
 app.use(limiter);
-
-// Body parsing
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
-
-// Routes
 app.use('/api/v1', routes);
-
-// Error handling
 app.use(notFoundHandler);
 app.use(errorHandler);
 
