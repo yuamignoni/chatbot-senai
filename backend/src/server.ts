@@ -1,24 +1,22 @@
-// src/server.ts
-import express from 'express';
 import dotenv from 'dotenv';
-import authRoutes from './routes/authRoutes'; 
+dotenv.config();
 
-dotenv.config(); 
-
-const app = express();
-app.use(express.json()); 
+import app from './app';
 
 const PORT = process.env.PORT || 3000;
 
-
-app.get('/', (req, res) => {
-  res.send('API de Login em construção!');
+const server = app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV}`);
+  console.log(`Health check: http://localhost:${PORT}/api/v1/health`);
 });
 
+const shutdown = (signal: string) => {
+  console.log(`${signal} received. Shutting down gracefully...`);
+  server.close(() => {
+    console.log('Process terminated');
+  });
+};
 
-app.use('/api/auth', authRoutes);
-
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-  console.log(`Acesse: http://localhost:${PORT}`);
-});
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));

@@ -1,17 +1,120 @@
-// prisma/schema.prisma
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl"]
 }
 
 datasource db {
-  provider = "postgresql" // OU mysql, sqlite - TEM QUE SER IGUAL AO QUE VOCÊ USOU NO "prisma init"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Funcionario {
+  id                 Int                    @id @default(autoincrement())
+  nome               String                 @db.VarChar(100)
+  email              String                 @unique @db.VarChar(100)
+  senha_hash         String                 @db.VarChar(255)
+  cpf                String                 @unique @db.VarChar(14)
+  data_nascimento    DateTime?              @db.Date
+  data_contratacao   DateTime               @db.Date
+  cargo              String                 @db.VarChar(100)
+  departamento       String                 @db.VarChar(100)
+  role               String                 @db.VarChar(20)
+  ativo              Boolean                @default(true)
+  criado_em          DateTime               @default(now()) @db.Timestamp(6)
+  atualizado_em      DateTime               @default(now()) @db.Timestamp(6)
+  registrosPonto     RegistroPonto[]
+  solicitacoesFerias SolicitacaoFerias[]
+  salarios           Salario[]
+  holerites          Holerite[]
+  beneficios         FuncionarioBeneficio[]
+  aprovacoesFerias   SolicitacaoFerias[]    @relation("AprovacoesFerias")
+}
+
+model RegistroPonto {
+  id                        Int         @id @default(autoincrement())
+  funcionario               Funcionario @relation(fields: [funcionario_id], references: [id])
+  funcionario_id            Int
+  data                      DateTime    @db.Date
+  hora_entrada              DateTime?   @db.Timestamp(6)
+  hora_saida                DateTime?   @db.Timestamp(6)
+  horas_trabalhadas_minutos Int?
+  horas_extras_minutos      Int?
+  horas_faltantes_minutos   Int?
+  observacoes               String?
+  criado_em                 DateTime    @default(now()) @db.Timestamp(6)
+  atualizado_em             DateTime    @default(now()) @db.Timestamp(6)
+}
+
+model SolicitacaoFerias {
+  id               Int          @id @default(autoincrement())
+  funcionario      Funcionario  @relation(fields: [funcionario_id], references: [id])
+  funcionario_id   Int
+  data_inicio      DateTime     @db.Date
+  data_fim         DateTime     @db.Date
+  dias_solicitados Int
+  status           String       @db.VarChar(20)
+  motivo_negacao   String?
+  aprovado_por     Funcionario? @relation("AprovacoesFerias", fields: [aprovado_por_id], references: [id])
+  aprovado_por_id  Int?
+  criado_em        DateTime     @default(now()) @db.Timestamp(6)
+  atualizado_em    DateTime     @default(now()) @db.Timestamp(6)
+}
+
+model Salario {
+  id             Int         @id @default(autoincrement())
+  funcionario    Funcionario @relation(fields: [funcionario_id], references: [id])
+  funcionario_id Int
+  salario_base   Decimal     @db.Decimal(10, 2)
+  data_inicio    DateTime    @db.Date
+  data_fim       DateTime?   @db.Date
+  ativo          Boolean     @default(true)
+  criado_em      DateTime    @default(now()) @db.Timestamp(6)
+  atualizado_em  DateTime    @default(now()) @db.Timestamp(6)
+  holerites      Holerite[]
+}
+
+model Holerite {
+  id                        Int         @id @default(autoincrement())
+  funcionario               Funcionario @relation(fields: [funcionario_id], references: [id])
+  funcionario_id            Int
+  salario                   Salario     @relation(fields: [salario_id], references: [id])
+  salario_id                Int
+  mes                       Int
+  ano                       Int
+  horas_trabalhadas_minutos Int?
+  horas_extras_minutos      Int?
+  valor_horas_extras        Decimal?    @db.Decimal(10, 2)
+  descontos                 Decimal?    @db.Decimal(10, 2)
+  beneficios                Decimal?    @db.Decimal(10, 2)
+  salario_liquido           Decimal     @db.Decimal(10, 2)
+  data_pagamento            DateTime    @db.Date
+  arquivo                   Bytes?
+  criado_em                 DateTime    @default(now()) @db.Timestamp(6)
+  atualizado_em             DateTime    @default(now()) @db.Timestamp(6)
+}
+
+model Beneficio {
+  id            Int                    @id @default(autoincrement())
+  nome          String                 @db.VarChar(100)
+  descricao     String?
+  valor_padrao  Decimal?               @db.Decimal(10, 2)
+  tipo          String                 @db.VarChar(50)
+  ativo         Boolean                @default(true)
+  criado_em     DateTime               @default(now()) @db.Timestamp(6)
+  atualizado_em DateTime               @default(now()) @db.Timestamp(6)
+  funcionarios  FuncionarioBeneficio[]
+}
+
+model FuncionarioBeneficio {
+  id             Int         @id @default(autoincrement())
+  funcionario    Funcionario @relation(fields: [funcionario_id], references: [id])
+  funcionario_id Int
+  beneficio      Beneficio   @relation(fields: [beneficio_id], references: [id])
+  beneficio_id   Int
+  valor          Decimal     @db.Decimal(10, 2)
+  data_inicio    DateTime    @db.Date
+  data_fim       DateTime?   @db.Date
+  ativo          Boolean     @default(true)
+  criado_em      DateTime    @default(now()) @db.Timestamp(6)
+  atualizado_em  DateTime    @default(now()) @db.Timestamp(6)
 }
