@@ -1,9 +1,0 @@
-{
-  "dependencies": {
-    "@typebot.io/react": "^0.8.5"
-  },
-  "devDependencies": {
-    "@types/cors": "^2.8.19",
-    "cors": "^2.8.5"
-  }
-}
