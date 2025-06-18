@@ -1,0 +1,82 @@
+.menu-desktop{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 99999;
+    background-color: var(--color-main);
+    color: white;
+    height: 80px;
+}
+
+.menu-desktop nav {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.menu-desktop nav a {
+    color: var(--color-white);
+    font-family: 'Poppins', Arial, Helvetica, sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.menu-desktop nav a:hover {
+    color: #f0f0f0;
+}
+
+.menu-desktop nav span {
+    color: var(--color-white);
+    font-family: 'Poppins', Arial, Helvetica, sans-serif;
+    font-weight: 500;
+}
+
+.menu-desktop .img h3 {
+    color: var(--color-white);
+    font-family: 'Poppins', Arial, Helvetica, sans-serif;
+    font-size: 24px;
+    margin: 0;
+}
+
+.logout-btn {
+    background-color: #fafafa;
+    color: #242424;
+    border: none;
+    padding: 7px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Poppins', Arial, Helvetica, sans-serif;
+    font-weight: 600;
+}
+
+.menu-desktop nav a#login{
+    color: var(--color-white);
+    background-color: var(--color-orange);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+.menu-desktop nav a#invest-text{
+    font-weight: bold;
+    color: var(--color-orange);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    font-size: 17px;
+}
+
+@media (max-width: 949px) {
+    .menu-desktop{
+        display: none;
+    }   
+}
+
+@media (min-width: 800px) and (max-width: 1000px) {
+    .menu-desktop nav a{
+        font-size: 14px;
+    }
+}
