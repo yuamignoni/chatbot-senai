@@ -9,7 +9,7 @@ const app = express();
 
 app.use(helmet());
 const corsOptions = {
-    origin: 'https://chatbot-senai-sk3g.onrender.com',
+    origin: 'https://chatbot-senai.netlify.app',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
