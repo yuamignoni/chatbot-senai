@@ -8,11 +8,14 @@ import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 const app = express();
 
 app.use(helmet());
+const corsOptions = {
+    origin: 'https://chatbot-senai-sk3g.onrender.com',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+};
 app.use(
-    cors({
-        origin: process.env.CORS_ORIGIN || '*',
-        credentials: true,
-    })
+    cors(corsOptions)
 );
 
 // Rate limiting
