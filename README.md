@@ -35,89 +35,86 @@ Antes de executar a aplicação, certifique-se de ter instalado:
 - [Docker](https://www.docker.com/) e [Docker Compose](https://docs.docker.com/compose/)
 - [Git](https://git-scm.com/)
 
-## 🛠️ Instalação e Configuração
+## 🛠️ Instalação e Execução
 
-### 1. Clone o repositório
+Para configurar e rodar a aplicação em seu ambiente de desenvolvimento, siga os passos abaixo. O uso de Docker é essencial para orquestrar os serviços.
+
+### 1. Clone o Repositório
 ```bash
 git clone git@github.com:AbilioGamaNetoJ/chatbot-senai.git
 cd chatbot-senai
 ```
 
-### 2. Configuração do Backend
+### 2. Configure as Variáveis de Ambiente (Opcional)
+
+A aplicação já vem pré-configurada para o ambiente Docker. Caso precise customizar, você pode criar um arquivo `.env` na pasta `backend` a partir do `.env.example`.
+
+### 3. Inicie os Serviços com Docker
+
+Este comando irá construir as imagens e iniciar os contêineres do frontend, backend e do banco de dados PostgreSQL em segundo plano.
 
 ```bash
-# Navegue para a pasta do backend
+docker compose up -d
+```
+
+### 4. Instale as Dependências e Popule o Banco
+
+Com os serviços rodando, execute o script `seed` para criar as tabelas e popular o banco de dados com dados de teste, incluindo o usuário administrador.
+
+```bash
+# Navegue até a pasta do backend
 cd backend
 
-# Instale as dependências
+# Instale as dependências (se for a primeira vez)
 npm install
 
-# Configure as variáveis de ambiente
-cp .env.example .env
-
-# Edite o arquivo .env com suas configurações
-# DATABASE_URL="postgresql://postgres:password@localhost:5432/hr_management"
-# JWT_SECRET="seu-jwt-secret-super-seguro"
-```
-
-### 3. Configuração do Frontend
-
-```bash
-# Navegue para a pasta do frontend (em outro terminal)
-cd frontend
-
-# Instale as dependências
-npm install
-```
-
-## 🚀 Executando a Aplicação
-
-### Opção 1: Usando Docker (Recomendado)
-
-```bash
-# Na pasta backend, execute:
-cd backend
-
-# Inicie os serviços (PostgreSQL + API)
-npm run docker:up
-
-# Para ver os logs
-npm run docker:logs
-
-# Para parar os serviços
-npm run docker:down
-```
-
-### Opção 2: Executando Localmente
-
-#### Backend
-```bash
-cd backend
-
-# Inicie apenas o PostgreSQL via Docker
-docker-compose up postgres -d
-
-# Execute as migrações do banco
-npm run migrate
-
-# Execute o seed (dados iniciais)
+# Execute o seed
 npm run seed
-
-# Inicie o servidor em modo desenvolvimento
-npm run dev
 ```
 
-O backend estará rodando em: `http://localhost:3000`
+Após a conclusão do `seed`, a aplicação estará pronta para uso.
 
-#### Frontend
+- **Frontend:** `http://localhost:8080`
+- **Backend:** `http://localhost:3000`
+
+### Usuário Administrador Padrão
+
+O script de `seed` cria um usuário administrador para o primeiro acesso ao sistema. Utilize as seguintes credenciais:
+
+- **Email:** `admin@empresa.com`
+- **Senha:** `admin123`
+
+## 🚀 Comandos Úteis
+
+### Docker
 ```bash
-cd frontend
+# Iniciar todos os serviços em segundo plano
+docker compose up -d
 
-# Inicie o servidor de desenvolvimento
-npm run dev
+# Parar todos os serviços
+docker compose down
+
+# Visualizar logs dos serviços
+docker compose logs -f
+
+# Acessar o terminal de um serviço (ex: backend)
+docker compose exec backend bash
 ```
 
-O frontend estará rodando em: `http://localhost:5173`
+### Prisma (Execute dentro da pasta `backend/`)
+```bash
+# Visualizar o banco via Prisma Studio
+npm run studio
+
+# Gerar o cliente Prisma após alterações no schema
+npm run generate
+
+# Criar e executar uma nova migração
+npx prisma migrate dev --name nome-da-migration
+
+# Executar o seed (popular o banco com dados iniciais)
+npm run seed
+```
 
 ## 📊 Banco de Dados
 
@@ -130,19 +127,6 @@ A aplicação utiliza PostgreSQL com as seguintes tabelas principais:
 - **Holerite** - Holerites dos funcionários
 - **Beneficio** - Benefícios disponíveis
 - **FuncionarioBeneficio** - Relação funcionário-benefício
-
-### Comandos úteis do Prisma
-
-```bash
-# Visualizar o banco via Prisma Studio
-npm run studio
-
-# Gerar o cliente Prisma após alterações no schema
-npm run generate
-
-# Executar migrações
-npm run migrate
-```
 
 ## 🤖 Funcionalidades do Chatbot
 
@@ -219,7 +203,7 @@ chatbot-senai/
 
 ## 🔐 Segurança
 
-- Autenticação JWT com refresh tokens
+- Autenticação JWT
 - Senhas criptografadas com bcrypt
 - Validação de dados com Joi
 - Rate limiting

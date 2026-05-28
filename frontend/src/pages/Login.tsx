@@ -22,33 +22,29 @@ const Login: React.FC = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/api/auth/login', {
+      const response = await fetch('http://localhost:3000/api/v1/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, senha: password }),
       });
 
       const data = await response.json();
 
-      if (response.ok) {
+      if (response.ok && data.success) {
+        const { token, funcionario } = data.data;
         localStorage.setItem('isAuthenticated', 'true');
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        // Simple role check based on email for now
-        if (data.user.email === 'admin@example.com') {
-          localStorage.setItem('role', 'admin');
-          localStorage.setItem('username', 'Admin');
-        } else {
-          localStorage.setItem('role', 'user');
-          localStorage.setItem('username', data.user.email);
-        }
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(funcionario));
+        localStorage.setItem('role', funcionario.role);
+        localStorage.setItem('username', funcionario.nome);
         navigate('/home');
       } else {
         setError(data.message || 'Credenciais inválidas');
       }
     } catch (err) {
+      console.error('Fetch Error:', err);
       setError('Não foi possível conectar ao servidor. Tente novamente mais tarde.');
     }
   };

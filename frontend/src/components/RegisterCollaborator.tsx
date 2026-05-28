@@ -5,43 +5,65 @@ interface RegisterCollaboratorProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (collaborator: {
-    firstName: string;
-    lastName: string;
+    nome: string;
     email: string;
-    password: string;
-    role: 'admin' | 'user';
-    admissionDate: string;
+    senha: string;
+    cpf: string;
+    data_contratacao: string;
+    cargo: string;
+    departamento: string;
+    role: 'admin' | 'manager' | 'employee';
   }) => void;
 }
+
+// Função para formatar CPF (XXX.XXX.XXX-XX)
+const formatCPF = (cpf: string): string => {
+  // Remove tudo que não for número
+  const cleanCPF = cpf.replace(/\D/g, '');
+  
+  // Se já tem 11 dígitos, formatar
+  if (cleanCPF.length === 11) {
+    return cleanCPF.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  }
+  
+  // Se já está formatado ou tem outro tamanho, retornar como está
+  return cpf;
+};
 
 const RegisterCollaborator: React.FC<RegisterCollaboratorProps> = ({
   isOpen,
   onClose,
   onSave,
 }) => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [role, setRole] = useState<'admin' | 'user'>('user');
-  const [admissionDate, setAdmissionDate] = useState('');
+  const [senha, setSenha] = useState('');
+  const [cpf, setCpf] = useState('');
+  const [data_contratacao, setDataContratacao] = useState('');
+  const [cargo, setCargo] = useState('');
+  const [departamento, setDepartamento] = useState('');
+  const [role, setRole] = useState<'admin' | 'manager' | 'employee'>('employee');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave({
-      firstName,
-      lastName,
+      nome,
       email,
-      password,
+      senha,
+      cpf: formatCPF(cpf),
+      data_contratacao: new Date(data_contratacao).toISOString(),
+      cargo,
+      departamento,
       role,
-      admissionDate,
     });
-    setFirstName('');
-    setLastName('');
+    setNome('');
     setEmail('');
-    setPassword('');
-    setRole('user');
-    setAdmissionDate('');
+    setSenha('');
+    setCpf('');
+    setDataContratacao('');
+    setCargo('');
+    setDepartamento('');
+    setRole('employee');
     onClose();
   };
 
@@ -58,22 +80,12 @@ const RegisterCollaborator: React.FC<RegisterCollaboratorProps> = ({
         </div>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="firstName">Primeiro Nome:</label>
+            <label htmlFor="nome">Nome Completo:</label>
             <input
               type="text"
-              id="firstName"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="lastName">Sobrenome:</label>
-            <input
-              type="text"
-              id="lastName"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
+              id="nome"
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
               required
             />
           </div>
@@ -88,12 +100,52 @@ const RegisterCollaborator: React.FC<RegisterCollaboratorProps> = ({
             />
           </div>
           <div className="form-group">
-            <label htmlFor="password">Senha:</label>
+            <label htmlFor="senha">Senha:</label>
             <input
               type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              id="senha"
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="cpf">CPF:</label>
+            <input
+              type="text"
+              id="cpf"
+              value={formatCPF(cpf)}
+              onChange={(e) => setCpf(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="data_contratacao">Data de Contratação:</label>
+            <input
+              type="date"
+              id="data_contratacao"
+              value={data_contratacao}
+              onChange={(e) => setDataContratacao(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="cargo">Cargo:</label>
+            <input
+              type="text"
+              id="cargo"
+              value={cargo}
+              onChange={(e) => setCargo(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="departamento">Departamento:</label>
+            <input
+              type="text"
+              id="departamento"
+              value={departamento}
+              onChange={(e) => setDepartamento(e.target.value)}
               required
             />
           </div>
@@ -102,22 +154,13 @@ const RegisterCollaborator: React.FC<RegisterCollaboratorProps> = ({
             <select
               id="role"
               value={role}
-              onChange={(e) => setRole(e.target.value as 'admin' | 'user')}
+              onChange={(e) => setRole(e.target.value as 'admin' | 'manager' | 'employee')}
               required
             >
-              <option value="user">Usuário</option>
+              <option value="employee">Colaborador</option>
               <option value="admin">Administrador</option>
+              <option value="manager">Gerente</option>
             </select>
-          </div>
-          <div className="form-group">
-            <label htmlFor="admissionDate">Data de Admissão:</label>
-            <input
-              type="date"
-              id="admissionDate"
-              value={admissionDate}
-              onChange={(e) => setAdmissionDate(e.target.value)}
-              required
-            />
           </div>
           <div className="form-actions">
             <button type="button" onClick={onClose}>

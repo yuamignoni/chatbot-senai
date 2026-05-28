@@ -31,6 +31,55 @@ async function main() {
         },
     });
 
+    console.log('👨‍💼 Criando usuários de teste...');
+    const managerPassword = await bcrypt.hash('manager123', 10);
+    const manager = await prisma.funcionario.create({
+        data: {
+            nome: 'João Manager',
+            email: 'manager@empresa.com',
+            senha_hash: managerPassword,
+            cpf: '12345678901',
+            data_nascimento: new Date('1985-01-01'),
+            data_contratacao: new Date('2020-01-01'),
+            cargo: 'Gerente de Vendas',
+            departamento: 'Vendas',
+            role: 'manager',
+            ativo: true,
+        },
+    });
+
+    const employeePassword = await bcrypt.hash('employee123', 10);
+    const employee = await prisma.funcionario.create({
+        data: {
+            nome: 'Maria Employee',
+            email: 'employee@empresa.com',
+            senha_hash: employeePassword,
+            cpf: '12345678902',
+            data_nascimento: new Date('1990-01-01'),
+            data_contratacao: new Date('2021-01-01'),
+            cargo: 'Analista',
+            departamento: 'Tecnologia',
+            role: 'employee',
+            ativo: true,
+        },
+    });
+
+    const usuarioPassword = await bcrypt.hash('usuario123', 10);
+    const usuario = await prisma.funcionario.create({
+        data: {
+            nome: 'Carlos Usuario',
+            email: 'usuario@empresa.com',
+            senha_hash: usuarioPassword,
+            cpf: '12345678903',
+            data_nascimento: new Date('1995-01-01'),
+            data_contratacao: new Date('2022-01-01'),
+            cargo: 'Assistente',
+            departamento: 'Administrativo',
+            role: 'usuario',
+            ativo: true,
+        },
+    });
+
     console.log('💸 Criando benefícios padrão...');
     const beneficios = await prisma.beneficio.createMany({
         data: [

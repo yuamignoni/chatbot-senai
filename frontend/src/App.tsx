@@ -7,14 +7,14 @@ import Menu from './components/Menu';
 import './App.css';
 
 const AuthGuard = ({ allowedRoles }: { allowedRoles: string[] }) => {
-  const isAuthenticated = localStorage.getItem('isAuthenticated');
+  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
   const role = localStorage.getItem('role');
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" replace />;
   }
 
-  return role && allowedRoles.includes(role) ? <Outlet /> : <Navigate to="/unauthorized" />;
+  return role && allowedRoles.includes(role) ? <Outlet /> : <Navigate to="/unauthorized" replace />;
 };
 
 const AuthenticatedLayout = () => {
@@ -38,19 +38,24 @@ const UnauthorizedPage = () => (
   </div>
 );
 
+const RootRedirect = () => {
+  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+  return <Navigate to={isAuthenticated ? "/home" : "/login"} replace />;
+};
+
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" />} />
+      <Route path="/" element={<RootRedirect />} />
       <Route path="/login" element={<Login />} />
       <Route path="/esqueci-senha" element={<ForgotPassword />} />
       
       <Route element={<AuthenticatedLayout />}>
-        <Route element={<AuthGuard allowedRoles={['admin']} />}>
+        <Route element={<AuthGuard allowedRoles={['admin', 'manager']} />}>
           <Route path="/manager" element={<Manager />} />
         </Route>
 
-        <Route element={<AuthGuard allowedRoles={['admin', 'user']} />}>
+        <Route element={<AuthGuard allowedRoles={['admin', 'manager', 'employee', 'usuario']} />}>
           <Route path="/home" element={<HomeWrapper />} />
         </Route>
         

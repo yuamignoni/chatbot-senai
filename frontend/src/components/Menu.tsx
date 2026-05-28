@@ -17,7 +17,7 @@ function Menu() {
       </div>
       <nav className='flex-center flex__gap-30'>
         <Link to="/home">Home</Link>
-        {role === 'admin' && <Link to="/manager">Gerenciar Usuários</Link>}
+        {(role === 'admin' || role === 'manager') && <Link to="/manager">Gerenciar Usuários</Link>}
         <button onClick={handleLogout} className="logout-btn">Sair</button>
       </nav>
     </div>

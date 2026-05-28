@@ -1,27 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/register_collaborator.css';
 
+interface Collaborator {
+  id: number;
+  nome: string;
+  email: string;
+  senha?: string;
+  cpf: string;
+  data_nascimento?: string;
+  data_contratacao: string;
+  cargo: string;
+  departamento: string;
+  role: 'admin' | 'manager' | 'employee' | 'usuario';
+  ativo?: boolean;
+  criado_em?: string;
+  atualizado_em?: string;
+}
+
 interface EditCollaboratorProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (id: number, updatedData: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    password?: string;
-    role: 'admin' | 'user';
-    admissionDate: string;
-  }) => void;
-  collaborator: {
-    id: number;
-    firstName: string;
-    lastName: string;
-    email: string;
-    password?: string;
-    role: 'admin' | 'user';
-    admissionDate: string;
-  } | null;
+  onSave: (id: number, updatedData: Omit<Collaborator, 'id' | 'ativo' | 'criado_em' | 'atualizado_em' | 'data_nascimento'>) => void;
+  collaborator: Collaborator | null;
 }
+
+// Função para formatar CPF (XXX.XXX.XXX-XX)
+const formatCPF = (cpf: string): string => {
+  // Remove tudo que não for número
+  const cleanCPF = cpf.replace(/\D/g, '');
+  
+  // Se já tem 11 dígitos, formatar
+  if (cleanCPF.length === 11) {
+    return cleanCPF.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  }
+  
+  // Se já está formatado ou tem outro tamanho, retornar como está
+  return cpf;
+};
 
 const EditCollaborator: React.FC<EditCollaboratorProps> = ({
   isOpen,
@@ -29,21 +44,25 @@ const EditCollaborator: React.FC<EditCollaboratorProps> = ({
   onSave,
   collaborator
 }) => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [role, setRole] = useState<'admin' | 'user'>('user');
-  const [admissionDate, setAdmissionDate] = useState('');
+  const [senha, setSenha] = useState('');
+  const [cpf, setCpf] = useState('');
+  const [data_contratacao, setDataContratacao] = useState('');
+  const [cargo, setCargo] = useState('');
+  const [departamento, setDepartamento] = useState('');
+  const [role, setRole] = useState<'admin' | 'manager' | 'employee' | 'usuario'>('employee');
 
   useEffect(() => {
     if (collaborator) {
-      setFirstName(collaborator.firstName);
-      setLastName(collaborator.lastName);
+      setNome(collaborator.nome);
       setEmail(collaborator.email);
-      setPassword(''); 
+      setCpf(collaborator.cpf);
+      setDataContratacao(collaborator.data_contratacao.split('T')[0]); // Apenas a data
+      setCargo(collaborator.cargo);
+      setDepartamento(collaborator.departamento);
       setRole(collaborator.role);
-      setAdmissionDate(collaborator.admissionDate);
+      setSenha(''); 
     }
   }, [collaborator]);
 
@@ -51,19 +70,21 @@ const EditCollaborator: React.FC<EditCollaboratorProps> = ({
     e.preventDefault();
     
     if (collaborator) {
-      const updatedData = {
-        firstName,
-        lastName,
+      const updatedData: Omit<Collaborator, 'id' | 'ativo' | 'criado_em' | 'atualizado_em' | 'data_nascimento'> = {
+        nome,
         email,
+        cpf,
+        data_contratacao: new Date(data_contratacao).toISOString(),
+        cargo,
+        departamento,
         role,
-        admissionDate,
       };
       
-      if (password) {
-        onSave(collaborator.id, { ...updatedData, password });
-      } else {
-        onSave(collaborator.id, updatedData);
+      if (senha) {
+        updatedData.senha = senha;
       }
+      
+      onSave(collaborator.id, updatedData);
     }
     
     onClose();
@@ -82,22 +103,12 @@ const EditCollaborator: React.FC<EditCollaboratorProps> = ({
         </div>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="firstName">Primeiro Nome:</label>
+            <label htmlFor="nome">Nome Completo:</label>
             <input
               type="text"
-              id="firstName"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="lastName">Sobrenome:</label>
-            <input
-              type="text"
-              id="lastName"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
+              id="nome"
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
               required
             />
           </div>
@@ -112,12 +123,52 @@ const EditCollaborator: React.FC<EditCollaboratorProps> = ({
             />
           </div>
           <div className="form-group">
-            <label htmlFor="password">Senha (deixe em branco para manter a atual):</label>
+            <label htmlFor="senha">Nova Senha (deixe em branco para manter a atual):</label>
             <input
               type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              id="senha"
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="cpf">CPF:</label>
+            <input
+              type="text"
+              id="cpf"
+              value={formatCPF(cpf)}
+              onChange={(e) => setCpf(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="data_contratacao">Data de Contratação:</label>
+            <input
+              type="date"
+              id="data_contratacao"
+              value={data_contratacao}
+              onChange={(e) => setDataContratacao(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="cargo">Cargo:</label>
+            <input
+              type="text"
+              id="cargo"
+              value={cargo}
+              onChange={(e) => setCargo(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="departamento">Departamento:</label>
+            <input
+              type="text"
+              id="departamento"
+              value={departamento}
+              onChange={(e) => setDepartamento(e.target.value)}
+              required
             />
           </div>
           <div className="form-group">
@@ -125,28 +176,20 @@ const EditCollaborator: React.FC<EditCollaboratorProps> = ({
             <select
               id="role"
               value={role}
-              onChange={(e) => setRole(e.target.value as 'admin' | 'user')}
+              onChange={(e) => setRole(e.target.value as 'admin' | 'manager' | 'employee' | 'usuario')}
               required
             >
-              <option value="user">Usuário</option>
+              <option value="employee">Colaborador</option>
               <option value="admin">Administrador</option>
+              <option value="manager">Gerente</option>
+              <option value="usuario">Usuário</option>
             </select>
-          </div>
-          <div className="form-group">
-            <label htmlFor="admissionDate">Data de Admissão:</label>
-            <input
-              type="date"
-              id="admissionDate"
-              value={admissionDate}
-              onChange={(e) => setAdmissionDate(e.target.value)}
-              required
-            />
           </div>
           <div className="form-actions">
             <button type="button" onClick={onClose}>
               Cancelar
             </button>
-            <button type="submit">Salvar</button>
+            <button type="submit">Salvar Alterações</button>
           </div>
         </form>
       </div>
